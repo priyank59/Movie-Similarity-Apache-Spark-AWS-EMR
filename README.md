@@ -1,4 +1,4 @@
- # Movie Similarity with Apache Spark on EMR
+ # Movie Similarity with Apache Spark on AWS EMR
 
 This project calculates movie similarities based on user ratings using Apache Spark's distributed computing power. The script runs on an Amazon EMR cluster with multiple nodes, where each node processes a portion of the data to compute the cosine similarity between pairs of movies.
 

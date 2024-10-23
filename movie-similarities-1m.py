@@ -11,8 +11,7 @@ def loadMovieNames():
         movieNames[int(fields[0])] = fields[1]
     return movieNames 
 
-#Python 3 doesn't let you pass around unpacked tuples,
-#so we explicitly extract the ratings now.
+
 def makePairs( userRatings ):
     ratings = userRatings[1]
     (movie1, rating1) = ratings[0]
@@ -56,7 +55,6 @@ data = sc.textFile("hdfs:///user/hadoop/ratings.dat")
 ratings = data.map(lambda l: l.split("::")).map(lambda l: (int(l[0]), (int(l[1]), float(l[2]))))
 
 # Emit every movie rated together by the same user.
-# Self-join to find every combination.
 ratingsPartitioned = ratings.partitionBy(100)
 joinedRatings = ratingsPartitioned.join(ratingsPartitioned)
 
@@ -68,11 +66,10 @@ uniqueJoinedRatings = joinedRatings.filter(filterDuplicates)
 # Now key by (movie1, movie2) pairs.
 moviePairs = uniqueJoinedRatings.map(makePairs).partitionBy(100)
 
-# We now have (movie1, movie2) => (rating1, rating2)
+
 # Now collect all ratings for each movie pair and compute similarity
 moviePairRatings = moviePairs.groupByKey()
 
-# We now have (movie1, movie2) = > (rating1, rating2), (rating1, rating2) ...
 # Can now compute similarities.
 moviePairSimilarities = moviePairRatings.mapValues(computeCosineSimilarity).persist()
 
